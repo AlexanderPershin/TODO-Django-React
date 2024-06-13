@@ -1,7 +1,9 @@
 from pathlib import Path
 import os
+from celery.schedules import crontab
 from decouple import config
 from datetime import timedelta
+import tasks.celery_tasks
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -139,5 +141,15 @@ LOGGING = {
             "level": config("DJANGO_LOG_LEVEL"),
             "propagate": True,
         },
+    },
+}
+
+CELERY_BROKER_URL = config("CELERY_BROKER", "redis://redis:6379/0")
+CELERY_RESULT_BACKEND = config("CELERY_BACKEND", "redis://redis:6379/0")
+
+CELERY_BEAT_SCHEDULE = {
+    "sample_task": {
+        "task": "tasks.celery_tasks.check_todos",
+        "schedule": crontab(minute="*/1"),
     },
 }

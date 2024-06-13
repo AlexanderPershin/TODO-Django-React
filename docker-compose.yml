@@ -19,6 +19,7 @@ services:
       - 443:443
     depends_on:
       - postgres
+      - redis
     networks:
       - app 
 
@@ -33,6 +34,39 @@ services:
       - todo-data:/var/lib/postgresql/data
     networks:
       - app
+
+  redis:
+    image: redis:7.4-rc-bookworm
+    networks:
+      - app
+
+  celery:
+    build: ./backend
+    container_name: celery
+    env_file:
+      - backend/.env
+    command: celery --workdir ./backend -A todo worker -l DEBUG
+    volumes:
+      - .:/opt/app
+    depends_on:
+      - api 
+      - redis
+    networks:
+      - app 
+  
+  celery-beat:
+    build: ./backend
+    container_name: celery-beat
+    env_file:
+      - backend/.env
+    command: celery --workdir ./backend -A todo beat -l DEBUG
+    volumes:
+      - .:/opt/app
+    depends_on:
+      - api 
+      - redis
+    networks:
+      - app 
 
 volumes:
   todo-data:
