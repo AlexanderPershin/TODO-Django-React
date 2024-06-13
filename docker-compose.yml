@@ -1,0 +1,42 @@
+services:
+  api:
+    entrypoint: ["/bin/bash"]
+    stdin_open: true
+    tty: true
+    build: ./backend
+    # command: >
+    #   sh -c "python ./backend/manage.py migrate &&
+    #          python manage.py collectstatic --noinput &&
+    #          python ./backend/manage.py loaddata ./backend/dump.json --verbosity=3 &&
+    #          python ./backend/manage.py runserver 0.0.0.0:8000"
+    container_name: api
+    env_file:
+      - backend/.env
+    volumes:
+      - .:/opt/app
+    ports:
+      - 8000:8000
+      - 443:443
+    depends_on:
+      - postgres
+    networks:
+      - app 
+
+  postgres:
+    image: postgres:16.3-bookworm
+    container_name: postgres
+    env_file:
+      - backend/.env
+    ports:
+      - "5432:5432"
+    volumes:
+      - todo-data:/var/lib/postgresql/data
+    networks:
+      - app
+
+volumes:
+  todo-data:
+
+networks:
+  app:
+    driver: bridge
