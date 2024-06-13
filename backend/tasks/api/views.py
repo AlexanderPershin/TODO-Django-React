@@ -31,8 +31,7 @@ class TasksListView(generics.ListAPIView):
         """
         search = self.request.query_params.get("search", None)
 
-        queryset = Task.objects.all()
-        queryset = queryset.filter(owner=self.request.user)
+        queryset = Task.objects.filter(owner=self.request.user)
 
         if search:
             search_query = Q(title__icontains=search) | Q(body__icontains=search)
@@ -54,7 +53,7 @@ class TaskDetailAPIView(viewsets.ModelViewSet):
         return queryset
 
     def retrieve(self, request, pk=None):
-        queryset = Task.objects.all()
+        queryset = self.get_queryset()
         task = get_object_or_404(queryset, pk=pk)
         serializer = TaskSerializer(task, many=False)
         return Response(serializer.data)
