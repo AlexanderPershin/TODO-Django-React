@@ -4,6 +4,7 @@ import logging
 from datetime import datetime, timedelta, timezone
 
 from django.db.models import Q
+from django.core.mail import send_mail
 from celery import shared_task
 from celery.schedules import crontab
 from celery.utils.log import get_task_logger
@@ -29,10 +30,17 @@ def check_todos():
         )
         about_to_expired_tasks = list(Task.objects.filter(about_expired_query))
         for task in about_to_expired_tasks:
-            # TODO: Notify by email if task expires in an hour
             # TODO: Send socket event to that user
             logger.debug(
                 f"Sending email notification to {task.owner.username} informing that {task.title} is about to be expired"
+            )
+
+            send_mail(
+                f"Task {task.title} expires in less than an hour",
+                f"Check your task {task.title}",
+                "noreply@todo_app.com",
+                [task.owner.email],
+                fail_silently=False,
             )
     except Exception as e:
         logger.error(f"Error notifying about soon expireing tasks: {e}", exc_info=True)
@@ -47,12 +55,18 @@ def check_todos():
         )
         expired_tasks = list(Task.objects.filter(expired_query))
         for task in expired_tasks:
-            # TODO: Notify by email that task have expired
             # TODO: Send socket event to that user
             logger.debug(
                 f"Sending email notification to {task.owner.username} informing that {task.title} is expired"
             )
             task.is_expired = True
             task.save()
+            send_mail(
+                f"Task {task.title} expired",
+                f"Task {task.title} expired",
+                "noreply@todo_app.com",
+                [task.owner.email],
+                fail_silently=False,
+            )
     except Exception as e:
         logger.error(f"Error updating expired tasks: {e}", exc_info=True)
