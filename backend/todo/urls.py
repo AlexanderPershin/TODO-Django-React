@@ -13,6 +13,7 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/", include("users.api.urls", namespace="users_api")),
     path("api/", include("tasks.api.urls", namespace="todos_api")),
+    path("api/", include("actions.api.urls", namespace="actions_api")),
     path("api/token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
     path("api/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
     path("api/token/blacklist/", TokenBlacklistView.as_view(), name="token_blacklist"),
