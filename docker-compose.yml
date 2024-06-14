@@ -20,6 +20,7 @@ services:
     depends_on:
       - postgres
       - redis
+      - websocket
     networks:
       - app 
 
@@ -64,6 +65,18 @@ services:
       - .:/opt/app
     depends_on:
       - api 
+      - redis
+    networks:
+      - app 
+
+  websocket:
+    entrypoint: ["/bin/bash"]
+    stdin_open: true
+    tty: true
+    build: ./sockets
+    ports:
+      - "8765:8765"
+    depends_on:
       - redis
     networks:
       - app 

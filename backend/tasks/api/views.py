@@ -1,19 +1,25 @@
 import logging
+import json
+import socketio
 from django.shortcuts import get_object_or_404
 from django.db.models import Q
 from rest_framework import generics, status
 from rest_framework import viewsets
 from rest_framework.response import Response
+from rest_framework.request import Request
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
-# from rest_framework.decorators import (
-#     api_view,
-#     authentication_classes,
-#     permission_classes,
-# )
+from rest_framework.decorators import (
+    api_view,
+    authentication_classes,
+    permission_classes,
+)
+import socketio.exceptions
 from tasks.models import Task
 from tasks.api.serializers import TaskSerializer
+
+from sockets.sockets_client import sio
 
 
 logger = logging.getLogger(__name__)
@@ -75,3 +81,32 @@ class TaskDetailAPIView(viewsets.ModelViewSet):
                 {"detail": "Task validation failed"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
+
+@api_view(['POST'])
+@authentication_classes([JWTAuthentication])
+@permission_classes([IsAuthenticated])
+def call_sockets(request: Request):
+    query_params = {
+        'user_id': str(request.user.pk),
+    }
+    sio.connect(f'ws://websocket:8765?user_id={str(request.user.pk)}', query_params)
+    sio.emit('my_event', json.dumps(request.data))
+    sio.disconnect()
+    return Response({"message": "Hello, world!"})
+
+@api_view(['POST'])
+@authentication_classes([JWTAuthentication])
+@permission_classes([IsAuthenticated])
+def send_message_to_user(request: Request):
+    data = {
+        'user_id': str(request.user.pk),
+        'message': f'Message to user {request.user.pk} from Django'
+    }
+    try:
+        sio.connect(f'ws://websocket:8765')
+    except socketio.exceptions.ConnectionError:
+        logger.info('Already connected to socket server')
+    logger.debug('sending django_message...')
+    sio.emit('django_message', json.dumps(data))
+    # sio.disconnect()
+    return Response({"message": "Message sent"})
