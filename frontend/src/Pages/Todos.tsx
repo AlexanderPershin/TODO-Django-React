@@ -1,7 +1,11 @@
-import React from "react";
+import AnimatedWrapper from "../Components/Layout/AnimatedWrapper";
 
 const Todos = () => {
-    return <div>Todos</div>;
+    return (
+        <AnimatedWrapper>
+            <div>Todos</div>
+        </AnimatedWrapper>
+    );
 };
 
 export default Todos;

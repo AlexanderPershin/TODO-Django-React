@@ -1,9 +1,10 @@
 import React from "react";
-import { Link, Outlet } from "react-router-dom";
-import { Flex, Layout } from "antd";
+import { Link } from "react-router-dom";
+import { Layout } from "antd";
 import { HomeOutlined } from "@ant-design/icons";
+import AnimatedOutlet from "../AnimatedOutlet";
 
-const { Header, Footer, Sider, Content } = Layout;
+const { Header, Footer, Content } = Layout;
 
 const headerStyle: React.CSSProperties = {
     textAlign: "center",
@@ -46,7 +47,7 @@ const Simplified = () => {
                 Stack: Django React Docker
             </Header>
             <Content style={contentStyle}>
-                <Outlet />
+                <AnimatedOutlet />
             </Content>
             <Footer style={footerStyle}>
                 &copy; All rights reserved, Alexander Pershin,{" "}

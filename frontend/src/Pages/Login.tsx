@@ -1,7 +1,12 @@
-import React, { FC } from "react";
+import { FC } from "react";
+import AnimatedWrapper from "../Components/Layout/AnimatedWrapper";
 
 const Login: FC = () => {
-    return <div>Login</div>;
+    return (
+        <AnimatedWrapper>
+            <div>Login</div>
+        </AnimatedWrapper>
+    );
 };
 
 export default Login;
