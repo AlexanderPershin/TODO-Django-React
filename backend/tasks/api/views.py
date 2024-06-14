@@ -82,17 +82,6 @@ class TaskDetailAPIView(viewsets.ModelViewSet):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-@api_view(['POST'])
-@authentication_classes([JWTAuthentication])
-@permission_classes([IsAuthenticated])
-def call_sockets(request: Request):
-    query_params = {
-        'user_id': str(request.user.pk),
-    }
-    sio.connect(f'ws://websocket:8765?user_id={str(request.user.pk)}', query_params)
-    sio.emit('my_event', json.dumps(request.data))
-    sio.disconnect()
-    return Response({"message": "Hello, world!"})
 
 @api_view(['POST'])
 @authentication_classes([JWTAuthentication])

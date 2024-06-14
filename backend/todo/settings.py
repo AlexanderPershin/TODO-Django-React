@@ -134,6 +134,12 @@ LOGGING = {
             "class": "logging.FileHandler",
             "filename": "logfile.log",
         },
+        "celery": {
+            "level": "DEBUG",
+            "class": "logging.handlers.RotatingFileHandler",
+            "filename": "celery.log",
+            "maxBytes": 1024 * 1024 * 100,
+        },
     },
     "loggers": {
         "": {

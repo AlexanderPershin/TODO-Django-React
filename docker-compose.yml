@@ -66,6 +66,7 @@ services:
     depends_on:
       - api 
       - redis
+      - websocket
     networks:
       - app 
 
