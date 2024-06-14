@@ -13,4 +13,4 @@ RUN pip install -r requirements.txt
 
 COPY . .
 
-CMD [ "python", "./socketio_server.py" ]
+CMD [ "python", "./sockets/socketio_server.py" ]

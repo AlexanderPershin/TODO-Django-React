@@ -23,8 +23,8 @@ def check_todos():
     logger.debug(f"Checking if some tasks expired or about to be expired...")
 
     try:
-        query_start_date = datetime.now(timezone.utc) + timedelta(hours=1)
-        query_end_date = datetime.now(timezone.utc) + timedelta(hours=2)
+        query_start_date = datetime.now(timezone.utc)
+        query_end_date = datetime.now(timezone.utc) + timedelta(hours=1)
         about_expired_query = (
             Q(end_date__gte=query_start_date)
             & Q(end_date__lte=query_end_date)
@@ -33,21 +33,21 @@ def check_todos():
         about_to_expired_tasks = list(Task.objects.filter(about_expired_query))
         for task in about_to_expired_tasks:
             try:
-                sio.connect(f'ws://websocket:8765')
+                sio.connect(f"ws://websocket:8765")
             except socketio.exceptions.ConnectionError:
-                logger.info('Already connected to socket server')
+                logger.info("Already connected to socket server")
 
             message = {
-                'event_type': 'task_changed',
-                'task_id': str(task.id),
-                'status': 'expired_soon',
-                'message': f'Task {task.title} will expire soon'
+                "event_type": "task_changed",
+                "task_id": str(task.id),
+                "status": "expired_soon",
+                "message": f"Task {task.title} will expire soon",
             }
             data = {
-                'user_id': str(task.owner.id),
-                'message': message,
+                "user_id": str(task.owner.id),
+                "message": message,
             }
-            sio.emit('django_message', json.dumps(data))
+            sio.emit("django_message", json.dumps(data))
 
             send_mail(
                 f"Task {task.title} expires in less than an hour",
@@ -70,21 +70,21 @@ def check_todos():
         expired_tasks = list(Task.objects.filter(expired_query))
         for task in expired_tasks:
             try:
-                sio.connect(f'ws://websocket:8765')
+                sio.connect(f"ws://websocket:8765")
             except socketio.exceptions.ConnectionError:
-                logger.info('Already connected to socket server')
+                logger.info("Already connected to socket server")
 
             message = {
-                'event_type': 'task_changed',
-                'task_id': str(task.id),
-                'status': 'expired',
-                'message': f'Task {task.title} expired'
+                "event_type": "task_changed",
+                "task_id": str(task.id),
+                "status": "expired",
+                "message": f"Task {task.title} expired",
             }
             data = {
-                'user_id': str(task.owner.id),
-                'message': message,
+                "user_id": str(task.owner.id),
+                "message": message,
             }
-            sio.emit('django_message', json.dumps(data))
+            sio.emit("django_message", json.dumps(data))
 
             task.is_expired = True
             task.save()
