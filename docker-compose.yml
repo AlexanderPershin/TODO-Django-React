@@ -71,9 +71,9 @@ services:
       - app 
 
   websocket:
-    entrypoint: ["/bin/bash"]
-    stdin_open: true
-    tty: true
+    # entrypoint: ["/bin/bash"]
+    # stdin_open: true
+    # tty: true
     build: ./sockets
     volumes:
       - .:/opt/app
