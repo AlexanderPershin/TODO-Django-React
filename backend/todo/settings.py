@@ -31,6 +31,7 @@ INSTALLED_APPS = [
     "users",
     "tasks",
     "actions",
+    "checkout",
 ]
 
 MIDDLEWARE = [
@@ -162,3 +163,5 @@ CELERY_BEAT_SCHEDULE = {
 }
 
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+
+STRIPE_SECRET_KEY = config("STRIPE_SECRET_KEY")
