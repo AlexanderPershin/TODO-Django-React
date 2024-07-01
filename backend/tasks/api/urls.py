@@ -1,6 +1,11 @@
 from django.urls import path, re_path, include
 from rest_framework.routers import DefaultRouter
-from tasks.api.views import TasksListView, TaskDetailAPIView, send_message_to_user
+from tasks.api.views import (
+    TasksListView,
+    TaskDetailAPIView,
+    send_message_to_user,
+    debug,
+)
 
 app_name = "tasks"
 
@@ -14,5 +19,6 @@ urlpatterns = [
         name="task_details",
     ),
     path("tasks/", TasksListView.as_view(), name="tasks_list"),
-    path('sockets/msg-to-user/', send_message_to_user, name="send_msg_to_user")
+    path("sockets/msg-to-user/", send_message_to_user, name="send_msg_to_user"),
+    path("debug/", debug, name="debug_view"),
 ]

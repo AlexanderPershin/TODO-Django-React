@@ -22,6 +22,8 @@ import stripe
 
 from sockets.sockets_client import sio
 
+stripe.api_key = config("STRIPE_SECRET_KEY")
+
 
 logger = logging.getLogger(__name__)
 

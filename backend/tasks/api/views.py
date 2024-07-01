@@ -18,6 +18,7 @@ from rest_framework.decorators import (
 import socketio.exceptions
 from tasks.models import Task
 from tasks.api.serializers import TaskSerializer
+from decouple import config
 
 from sockets.sockets_client import sio
 
@@ -83,19 +84,31 @@ class TaskDetailAPIView(viewsets.ModelViewSet):
             )
 
 
-@api_view(['POST'])
+@api_view(["POST"])
 @authentication_classes([JWTAuthentication])
 @permission_classes([IsAuthenticated])
 def send_message_to_user(request: Request):
     data = {
-        'user_id': str(request.user.pk),
-        'message': f'Message to user {request.user.pk} from Django'
+        "user_id": str(request.user.pk),
+        "message": f"Message to user {request.user.pk} from Django",
     }
     try:
-        sio.connect(f'ws://websocket:8765')
+        sio.connect(f"ws://websocket:8765")
     except socketio.exceptions.ConnectionError:
-        logger.info('Already connected to socket server')
-    logger.debug('sending django_message...')
-    sio.emit('django_message', json.dumps(data))
+        logger.info("Already connected to socket server")
+    logger.debug("sending django_message...")
+    sio.emit("django_message", json.dumps(data))
     # sio.disconnect()
     return Response({"message": "Message sent"})
+
+
+@api_view(["POST"])
+@authentication_classes([])
+@permission_classes([])
+def debug(request: Request):
+    success_url = (config("FRONTEND_CHECKOUT_SUCCESS_URL"),)
+    cancel_url = (config("FRONTEND_CHECKOUT_FAILED_URL"),)
+    logger.debug(f"success_url == {success_url}")
+    logger.debug(f"cancel_url == {cancel_url}")
+
+    return Response({"message": "Debug successful"})
